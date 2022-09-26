@@ -7,7 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 from model.base import BaseModel
 from data.pkl_dataset import PKLDataset
 
-@hydra.main(config_path="configs/", config_name="resnet50_mlp3.yaml")
+@hydra.main(config_path="configs/", config_name="config.yaml")
 def main(cfg):
 	device = 'cuda' if torch.cuda.is_available() else 'cpu'
 	if cfg.model.type != 'base':
@@ -21,12 +21,12 @@ def main(cfg):
 	model = BaseModel(cfg.model.encoder, cfg.model.mlp_layers).to(device)
 	
 	# load checkpoint (if resuming training)
+	checkpoints_dir = os.path.join(writer.log_dir,'checkpoints')
+	if not os.path.exists(checkpoints_dir):
+		os.makedirs(checkpoints_dir)
 	if cfg.train_params.resume_from_checkpoint is False:
 		start_epoch = 0
 	else:
-		checkpoints_dir = os.path.join(writer.log_dir,'checkpoints')
-		if not os.path.exists(checkpoints_dir):
-			os.makedirs(checkpoints_dir)
 		start_epoch = cfg.train_params.start_epoch
 	
 	# load hyperparams
@@ -56,16 +56,16 @@ def main(cfg):
 	for epoch in range(start_epoch, epochs):
 		print('epoch =', epoch)
 		running_train_loss = 0
-		num_train_batches = 0
+		num_train_batches = 1
 		running_val_loss = 0
-		num_val_batches = 0
+		num_val_batches = 1
 		
 		train_iterator = iter(train_dataloader)
 		val_iterator = iter(val_dataloader)
 		
 		# forward + backward pass per batch
 		for i in range(len_train // bs):
-			print('     batch =', i)
+			print('     train batch =', i)
 			optimizer.zero_grad()
 			
 			# load batch
@@ -90,10 +90,11 @@ def main(cfg):
 		# all done on cpu
 		with torch.no_grad():
 			for i in range(len_val // bs):
+				print('     val batch =', i)
 				running_val_loss = 0
 				num_batches = 0
 				batch_inp, batch_gt = next(val_iterator)
-				batch_inp = batch_imgs.float()
+				batch_inp, batch_gt = batch_inp.float(), batch_gt.float()
 				batch_oup = model.cpu()(batch_inp)
 				loss = criterion(batch_oup, batch_gt)
 				
@@ -109,7 +110,7 @@ def main(cfg):
 		writer.add_scalar('Loss/val', avg_val_loss, epoch)
 		
 		# save model at every epoch
-		checkpoint_pth = os.path.join(checkpoints_dir, '0.tar')
+		checkpoint_pth = os.path.join(checkpoints_dir, str(epoch)+'.tar')
 		checkpoint = {'epoch': epoch,
 					  'model_state_dict': model.state_dict(),
 					  }

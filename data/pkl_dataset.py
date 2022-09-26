@@ -8,9 +8,9 @@ import numpy as np
 class PKLDataset(Dataset):
 	def __init__(self, data_dir):
 		self.data_dir = data_dir
-		data_list = os.listdir(self.data_dir)
-		self.data_list = list(filter(lambda x:x[:-3]=='png',data_list))
-		self.length = len(data_list)
+		self.data_list = os.listdir(self.data_dir)
+		self.data_list = list(filter(lambda x:x[-3:]=='pkl', self.data_list))
+		self.length = len(self.data_list)
 		
 	def __len__(self):
 		return self.length
@@ -44,7 +44,7 @@ def main():
 	idx = 0
 	while True:
 		data = dataset[idx]
-		rgb = data[0]
+		rgb = data[0].transpose(1,2,0)
 		rnt = data[1]
 		print(rnt)
 		bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
