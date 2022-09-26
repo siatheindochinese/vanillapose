@@ -56,9 +56,9 @@ def main(cfg):
 	for epoch in range(start_epoch, epochs):
 		print('epoch =', epoch)
 		running_train_loss = 0
-		num_train_batches = 1
+		num_train_batches = 0
 		running_val_loss = 0
-		num_val_batches = 1
+		num_val_batches = 0
 		
 		train_iterator = iter(train_dataloader)
 		val_iterator = iter(val_dataloader)
