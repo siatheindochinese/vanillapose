@@ -88,7 +88,6 @@ def main(cfg):
 			torch.cuda.empty_cache()
 			
 		# compute val loss
-		# all done on cpu
 		with torch.no_grad():
 			for i in range(len_val // bs):
 				print('     val batch =', i)
@@ -96,9 +95,9 @@ def main(cfg):
 				num_batches = 0
 				batch_inp, batch_gt = next(val_iterator)
 				##### RGB normalize 255
-				batch_inp, batch_gt = batch_inp.float()/255., batch_gt.float()
-				batch_oup = model.cpu()(batch_inp)
-				loss = criterion(batch_oup, batch_gt)
+				batch_inp, batch_gt = batch_inp.float().to(device)/255., batch_gt.float().to(device)
+				batch_oup = model(batch_inp)
+				loss = criterion.to(device)(batch_oup, batch_gt)
 				
 				running_val_loss += loss.detach().cpu().item()
 				num_val_batches += 1
@@ -107,7 +106,7 @@ def main(cfg):
 		avg_train_loss = running_train_loss / num_train_batches
 		avg_val_loss = running_val_loss / num_val_batches
 		print('epoch train loss =', avg_train_loss)
-		print('epoch test loss =', avg_train_loss)
+		print('epoch val loss =', avg_val_loss)
 		writer.add_scalar('Loss/train', avg_train_loss, epoch)
 		writer.add_scalar('Loss/val', avg_val_loss, epoch)
 		
