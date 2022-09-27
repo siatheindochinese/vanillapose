@@ -70,7 +70,8 @@ def main(cfg):
 			
 			# load batch
 			batch_inp, batch_gt = next(train_iterator)
-			batch_inp, batch_gt = batch_inp.float().to(device), batch_gt.float().to(device)
+			##### RGB normalize 255
+			batch_inp, batch_gt = batch_inp.float().to(device)/255. , batch_gt.float().to(device)
 			batch_oup = model(batch_inp)
 			
 			loss = criterion.to(device)(batch_oup, batch_gt)
@@ -94,7 +95,8 @@ def main(cfg):
 				running_val_loss = 0
 				num_batches = 0
 				batch_inp, batch_gt = next(val_iterator)
-				batch_inp, batch_gt = batch_inp.float(), batch_gt.float()
+				##### RGB normalize 255
+				batch_inp, batch_gt = batch_inp.float()/255., batch_gt.float()
 				batch_oup = model.cpu()(batch_inp)
 				loss = criterion(batch_oup, batch_gt)
 				
