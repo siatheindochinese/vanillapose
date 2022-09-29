@@ -30,5 +30,13 @@ For the yaml file provided in this repository:
 python train_base.py +experiment=resnet50_mlp3.yaml
 ```
 
-## Inference
-- to-be-added
+## Inference Configuration
+Specify the model architecture, the path to model weights as well as camera intrinsics in a yaml file under ``configs/inference/``. Camera intrinsics are stored as ``.txt`` files under ``intrin/``. Then, run:
+```shell
+python inference.py +inference=<config_name.yaml>
+```
+
+For the yaml file provided in this repository:
+```shell
+python inference.py +experiment=resnet50_mlp3.yaml
+```
