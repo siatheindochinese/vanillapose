@@ -38,5 +38,5 @@ python inference.py +inference=<config_name.yaml>
 
 For the yaml file provided in this repository:
 ```shell
-python inference.py +experiment=resnet50_mlp3.yaml
+python inference.py +inference=resnet50_mlp3.yaml
 ```
