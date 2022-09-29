@@ -1,0 +1,6 @@
+torch==1.8.2+cu111
+torchvision==0.9.1+cu111
+hydra
+pickle
+opencv-python==4.4.0.46
+numpy
