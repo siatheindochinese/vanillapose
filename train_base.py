@@ -28,6 +28,9 @@ def main(cfg):
 		start_epoch = 0
 	else:
 		start_epoch = cfg.train_params.start_epoch
+		prev_checkpoints_pth = cfg.train_params.checkpoints_pth
+		checkpoint = torch.load(os.path.join(prev_checkpoints_pth, str(start_epoch-1)+'.tar'))
+		model.load_state_dict(checkpoint['model_state_dict'])
 	
 	# load hyperparams
 	epochs = cfg.train_params.epochs
@@ -91,13 +94,12 @@ def main(cfg):
 		with torch.no_grad():
 			for i in range(len_val // bs):
 				print('     val batch =', i)
-				running_val_loss = 0
-				num_batches = 0
 				batch_inp, batch_gt = next(val_iterator)
 				##### RGB normalize 255
 				batch_inp, batch_gt = batch_inp.float().to(device)/255., batch_gt.float().to(device)
 				batch_oup = model(batch_inp)
 				loss = criterion.to(device)(batch_oup, batch_gt)
+				print('     batch loss =', loss)
 				
 				running_val_loss += loss.detach().cpu().item()
 				num_val_batches += 1
