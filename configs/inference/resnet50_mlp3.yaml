@@ -1,0 +1,12 @@
+# @package _global_
+
+model:
+    type: base
+    encoder: resnet50
+    mlp_layers: 3
+    weights_pth: runs/Sep28_19-23-19_intern1-kianwei/checkpoints/0.tar
+
+dataset:
+    dir: /home/intern1/Linemod_preprocessed/renders/ufcoco/
+    
+intrin: intrin/intrin_ps3.txt
